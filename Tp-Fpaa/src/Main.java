@@ -21,11 +21,13 @@ public class Main {
 
     private static int[] forcaBruta(int[] conjunto, int valor){
         int[] subconjunto = null;
+        Arrays.stream(conjunto).forEach(System.out::println);
 
-        for (int i=0; i< conjunto.length; i++) { // inicio
-            for (int j = 1; j < conjunto.length - i; j++) { // tam conjunto
-                int[] s = geraSubConjunto(conjunto, i, j);
+        for (int i=1; i <= conjunto.length; i++) { // tam conjunto
+            for (int j = 0; j <= conjunto.length; j++) { // inicio
+                int[] s = geraSubConjunto(conjunto, j, i);
                 System.out.println("-------------------------");
+
                 Arrays.stream(s).forEach(System.out::println);
                 System.out.println(s);
 
