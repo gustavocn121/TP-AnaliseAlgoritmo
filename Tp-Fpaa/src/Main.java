@@ -2,51 +2,14 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
+import java.util.stream.Collectors;
 
 public class Main {
 
     static int seed = 1;
-    static final int TAMANHO_CONJUNTO = 10;
+    static final int TAMANHO_CONJUNTO = 3;
 
-    private static int[] geraSubConjunto(int[] conjunto, int inicio, int tamanho){
-        int[] subconjunto = new int[tamanho];
-
-        for (int i = 0; i < tamanho; i++) {
-            subconjunto[i] = conjunto[inicio + i];
-        }
-
-
-        return subconjunto;
-    }
-
-    private static int[] forcaBruta(int[] conjunto, int valor){
-        int[] subconjunto = null;
-        Arrays.stream(conjunto).forEach(System.out::println);
-
-        for (int i=1; i <= conjunto.length; i++) { // tam conjunto
-            for (int j = 0; j <= conjunto.length; j++) { // inicio
-                int[] s = geraSubConjunto(conjunto, j, i);
-                System.out.println("-------------------------");
-
-                Arrays.stream(s).forEach(System.out::println);
-                System.out.println(s);
-
-                System.out.println("-------------------------");
-
-                if (Arrays.stream(s).sum() == valor){
-                    subconjunto = s;
-                }
-
-
-            }
-
-        }
-
-        return subconjunto;
-    }
-
-
-    private static int[] geraConjunto(int tamanho){
+    private static int[] gerarConjunto(int tamanho){
         Random gerador = new Random(seed);
         seed +=1;
         int[] dados = new int[tamanho];
@@ -56,15 +19,48 @@ public class Main {
         return dados;
     }
 
+    private static List<List<Integer>> gerarSubconjuntosPorTamanho(int[] conjunto, int size) {
+        List<List<Integer>> result = new ArrayList<>();
+        if (size == 1) {
+            for (int i = 0; i < conjunto.length; i++) {
+                result.add(Arrays.asList(conjunto[i]));
+            }
+        } else {
+            for (int i = 0; i < conjunto.length - size + 1; i++) {
+                int[] head = Arrays.copyOfRange(conjunto, i, i + 1);
+                int[] rest = Arrays.copyOfRange(conjunto, i + 1, conjunto.length);
+                for (List<Integer> set : gerarSubconjuntosPorTamanho(rest, size - 1)) {
+                    List<Integer> newSet = new ArrayList<>();
+                    newSet.addAll(Arrays.asList(head[0]));
+                    newSet.addAll(set);
+                    result.add(newSet);
+                }
+            }
+        }
+        return result;
+    }
+
+    public static List<List<Integer>> gerarTodosSubconjuntos(int[] conjunto){
+        List<List<Integer>> subconjuntos = new ArrayList<>();
+        for (int i = 1; i <= conjunto.length; i++) {
+            subconjuntos.addAll(gerarSubconjuntosPorTamanho(conjunto, i));
+        }
+        return subconjuntos;
+    }
+
+    public static List<List<Integer>> forcaBruta(int[] subconjuntos, int value){
+        return gerarTodosSubconjuntos(subconjuntos).stream()
+                .filter(subconjunto -> subconjunto.stream().mapToInt(Integer::intValue).sum() == value)
+                .collect(Collectors.toList());
+    } 
 
     public static void main(String[] args) throws Exception {
-//        int[] conjunto = geraConjunto(TAMANHO_CONJUNTO);
-        int[] conjunto = {1, 2, 3};
+        int[] conjunto = gerarConjunto(TAMANHO_CONJUNTO);
+        int[] conjunto2 = {1,2,3};
         int v = 10;
-        int[] subconjunto = forcaBruta(conjunto, v);
-        if (subconjunto == null){
-
-        }
+        List<List<Integer>> subconjuntos = forcaBruta(conjunto, v);
 
     }
+
+    
 }
