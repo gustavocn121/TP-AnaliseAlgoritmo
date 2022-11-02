@@ -1,3 +1,6 @@
+import java.io.FileWriter;
+import java.io.IOException;
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -7,7 +10,7 @@ import java.util.stream.Collectors;
 public class Main {
 
     static int seed = 1;
-    static final int TAMANHO_CONJUNTO = 3;
+    static int tamanhoConjunto = 3;
 
     private static int[] gerarConjunto(int tamanho){
         Random gerador = new Random(seed);
@@ -54,13 +57,58 @@ public class Main {
                 .collect(Collectors.toList());
     } 
 
-    public static void main(String[] args) throws Exception {
-        int[] conjunto = gerarConjunto(TAMANHO_CONJUNTO);
-        int[] conjunto2 = {1,2,3};
-        int v = 10;
-        List<List<Integer>> subconjuntos = forcaBruta(conjunto, v);
-
+    private static int calcularV(int[] conjunto){
+        return Arrays.stream(conjunto).sum() / 2;
     }
 
+    private static void mediaVetorToCsv(List<Double> list, int tamanhoInicial){
+        try {
+            FileWriter fileWriter = new FileWriter("resultados.csv");
+            for (int i = 0; i < list.size(); i++) {
+                String tamanhoVetor = Integer.toString(i+tamanhoInicial);
+                fileWriter.write(tamanhoVetor +','+ Double.toString(list.get(i)).substring(0, 4) + "\n");
+            }
+
+            fileWriter.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+
+    public static void main(String[] args) throws Exception {
+        long mediaTempos = 0;
+        int c =0;
+
+        // [10, 20, 30, 40, 50, 60, 70, 80, 90, 100]
+        List<Double> mediaTempoConjuntos = new ArrayList<>(); 
+
+        // vetores de tamanho 2 a 100
+        for (int tamanho = 2; tamanho <= 100; tamanho++) {
+            int[] conjunto = gerarConjunto(tamanho);
+            int v = calcularV(conjunto);
+            double somaTempoConjunto = 0;
+            
+            // forca bruta
+            for (int i = 0; i < 150; i++) {
+                long tempoInicial = System.currentTimeMillis();
+                List<List<Integer>> subconjuntos = forcaBruta(conjunto, v);
+                long tempoFinal = System.currentTimeMillis();
+
+                long tempoExecucao = tempoFinal - tempoInicial;
+                mediaTempos+= tempoExecucao;
+                System.out.printf("%.3f ms%n", (tempoExecucao) / 1000d);
+                somaTempoConjunto += tempoExecucao;
+                c++;
+            }
+
+            mediaTempoConjuntos.add(somaTempoConjunto / 150.0);
+
+        }
+        mediaVetorToCsv(mediaTempoConjuntos, 2);
+        System.out.printf("Media: %.3f ms%n", (mediaTempos/c) / 1000d);
+
+    }
+    
     
 }
