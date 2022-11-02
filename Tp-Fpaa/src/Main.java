@@ -82,17 +82,17 @@ public class Main {
         }
     }
 
-    
+
     public static void main(String[] args) throws Exception {
         long mediaTempos = 0;
-        int contador =0;
+        int contador = 0;
 
         List<Double> mediaTempoConjuntos = new ArrayList<>(); 
 
         try {
             double somaTempoConjunto = 0;
             int tamanho = 2;
-            while(somaTempoConjunto/150.0<4000) {
+            while((somaTempoConjunto/150.0) <4000) {
                 int[] conjunto = gerarConjunto(tamanho);
                 int v = calcularV(conjunto);
                 somaTempoConjunto = 0;
@@ -107,6 +107,7 @@ public class Main {
                     somaTempoConjunto += tempoExecucao;
                     contador++;
                 }
+                System.out.printf("Media Conjunto de tamanho %d: %.3f ms%n \n", tamanho, (somaTempoConjunto / 150.0));
                 
                 mediaTempoConjuntos.add(somaTempoConjunto / 150.0);
                 tamanho++;
