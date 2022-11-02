@@ -1,6 +1,7 @@
 import java.io.FileWriter;
 import java.io.IOException;
-import java.math.BigDecimal;
+import java.text.DecimalFormat;
+import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -64,7 +65,8 @@ public class Main {
             FileWriter fileWriter = new FileWriter("resultados.csv");
             for (int i = 0; i < list.size(); i++) {
                 String tamanhoVetor = Integer.toString(i+tamanhoInicial);
-                fileWriter.write(tamanhoVetor +','+ Double.toString(list.get(i)).substring(0, 4) + "\n");
+                String tempo = String.format("%.5f", list.get(i));
+                fileWriter.write(tamanhoVetor +';' + tempo + "\n");
             }
 
             fileWriter.close();
@@ -85,6 +87,7 @@ public class Main {
         try {
             double somaTempoConjunto = 0;
             int tamanho = 2;
+            int aa =0;
             while(somaTempoConjunto/150.0<4000) {
                 int[] conjunto = gerarConjunto(tamanho);
                 int v = calcularV(conjunto);
@@ -98,12 +101,13 @@ public class Main {
                     long tempoExecucao = tempoFinal - tempoInicial;
                     mediaTempos+= tempoExecucao;
                     System.out.printf("%.3f s%n", (tempoExecucao) / 1000d);
-                    somaTempoConjunto += tempoExecucao / 1000d;
+                    somaTempoConjunto += tempoExecucao;
                     c++;
                 }
                 
                 mediaTempoConjuntos.add(somaTempoConjunto / 150.0);
                 tamanho++;
+                aa++;
             }    
         } catch (Exception e) {
             System.out.println(e.getMessage());        
