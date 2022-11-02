@@ -10,6 +10,7 @@ public class Main {
 
     static int tamanhoConjunto = 3;
 
+    // Gera conjunto aleatorio, recebe o tamanho
     private static int[] gerarConjunto(int tamanho){
         Random gerador = new Random();
         int[] dados = new int[tamanho];
@@ -19,6 +20,7 @@ public class Main {
         return dados;
     }
 
+    // Recebe um tamnho 'size' e retorna lista com todos os possiveis de subconjuntos de tamanho == size 
     private static List<List<Integer>> gerarSubconjuntosPorTamanho(int[] conjunto, int size) {
         List<List<Integer>> result = new ArrayList<>();
         if (size == 1) {
@@ -40,6 +42,7 @@ public class Main {
         return result;
     }
 
+    // Gera todos os possíveis subconjuntos de um conjunto
     public static List<List<Integer>> gerarTodosSubconjuntos(int[] conjunto){
         List<List<Integer>> subconjuntos = new ArrayList<>();
         for (int i = 1; i <= conjunto.length; i++) {
@@ -48,16 +51,21 @@ public class Main {
         return subconjuntos;
     }
 
-    public static List<List<Integer>> forcaBruta(int[] subconjuntos, int value){
-        return gerarTodosSubconjuntos(subconjuntos).stream()
+    // Retorna os subconjuntos que somados resultam em value (parametro) 
+    public static List<List<Integer>> forcaBruta(int[] conjunto, int value){
+        return gerarTodosSubconjuntos(conjunto).stream()
                 .filter(subconjunto -> subconjunto.stream().mapToInt(Integer::intValue).sum() == value)
                 .collect(Collectors.toList());
     } 
 
+    // Calcula o valur de V (enunciado)
     private static int calcularV(int[] conjunto){
         return Arrays.stream(conjunto).sum() / 2;
     }
 
+
+    // Gera arquivo CSV com os resultados
+    // TamanhoDoVetor;TempoMedio; 
     private static void mediaVetorToCsv(List<Double> list, int tamanhoInicial){
         try {
             FileWriter fileWriter = new FileWriter("resultados.csv");
@@ -74,22 +82,19 @@ public class Main {
         }
     }
 
-
+    
     public static void main(String[] args) throws Exception {
         long mediaTempos = 0;
-        int c =0;
+        int contador =0;
 
-        // [10, 20, 30, 40, 50, 60, 70, 80, 90, 100]
         List<Double> mediaTempoConjuntos = new ArrayList<>(); 
 
         try {
             double somaTempoConjunto = 0;
             int tamanho = 2;
-            int aa =0;
             while(somaTempoConjunto/150.0<4000) {
                 int[] conjunto = gerarConjunto(tamanho);
                 int v = calcularV(conjunto);
-                // forca bruta
                 somaTempoConjunto = 0;
                 for (int i = 0; i < 150; i++) {
                     long tempoInicial = System.currentTimeMillis();
@@ -100,17 +105,16 @@ public class Main {
                     mediaTempos+= tempoExecucao;
                     System.out.printf("%.3f s%n", (tempoExecucao) / 1000d);
                     somaTempoConjunto += tempoExecucao;
-                    c++;
+                    contador++;
                 }
                 
                 mediaTempoConjuntos.add(somaTempoConjunto / 150.0);
                 tamanho++;
-                aa++;
             }    
         } catch (Exception e) {
             System.out.println(e.getMessage());        
         } finally{
-            System.out.println("Media: " + mediaTempos / c);
+            System.out.println("Media: " + mediaTempos / contador);
             mediaVetorToCsv(mediaTempoConjuntos, 2);
         }
 
